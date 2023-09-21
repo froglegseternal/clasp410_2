@@ -37,6 +37,45 @@ def solve_temp(time, k=1./300, T_env=25, T_init=90):
     return temp
 
 
+def hot(T, k, Tenv):
+    '''
+    Given current temperature (T), cooling rate (k) and the environmental
+    temperature (Tenv), return the derivative of Temperature of the cooling
+    body.
+    '''
+
+    return -k*(T-Tenv)
+
+
+def euler(deltaT, T_init, deltaT=60, tstart=0, tstop=600,
+          k=1/300, Tenv=21, Tstop=60):
+    '''
+    Solve the cooling equation given a time array, `time`, with times
+    evenly spaced by some delta-T and in units of seconds.
+
+    Also require T_init, the initial temperature of the body in Celcius.
+
+    DEFINE INPUTS HERE.
+    '''
+
+    # Create time array:
+    time = np.arange(tstart, tstop, deltaT)
+
+    # Create solution array:
+    T_sol = np.zeros(time.size)
+    T_sol[0] = T_init  # set inital temp.
+
+    # Iterate through our solver:
+    for i in range(time.size - 1):
+        T_sol[i+1] = T_sol[i] + deltaT * hot(T_sol[i], k=k, Tenv=Tenv)
+
+        if T_sol[i+1] <= Tstop:
+            T_sol = T_sol[:i+2]
+            break
+
+    return time, T_sol
+
+
 def time_to_temp(T_targ, k=1/300., T_env=20, T_init=90):
     '''
     Given an initial temperature, `T_init`, an ambient temperature, `T_env`,
