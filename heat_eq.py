@@ -62,8 +62,7 @@ def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2):
 
     # Solve!
     for j in range(0, N-1):
-        for i in range(1, M-1):
-            temp[i, j+1] = (1-2*r)*temp[i, j] + \
-                r*(temp[i+1, j]+temp[i-1, j])
+        temp[1:-1, j+1] = (1-2*r)*temp[1:-1, j] + \
+            r*(temp[2:, j]+temp[:-2, j])
 
     return x, t, temp
