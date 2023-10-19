@@ -6,7 +6,7 @@ A set of tools for solving and visualizing the heat equation in 1D.
 import numpy as np
 import matplotlib.pyplot as plt
 
-solution = np.array([[0., 0., 0.       , 0.       , 0.       , 0.       ,
+solution = np.array([[0., 0., 0., 0., 0.       , 0.       ,
         0., 0., 0., 0.       , 0.       ],
        [0.64     , 0.48     , 0.4      , 0.32     , 0.26     , 0.21     ,
         0.17     , 0.1375   , 0.11125  , 0.09     , 0.0728125],
@@ -20,7 +20,13 @@ solution = np.array([[0., 0., 0.       , 0.       , 0.       , 0.       ,
         0.       , 0.       , 0.       , 0.       , 0.       ]])
 
 
-def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2):
+def sample_init(x):
+    '''Simple initial boundary condition function.'''
+    return 4*x - 4*x**2
+
+
+def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2,
+               init=sample_init):
     '''
     Stuff.
 
@@ -30,6 +36,13 @@ def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2):
         Time and space step.
     c2 : float, default=1.0
         Thermal diffusivity.
+    xmax, tmax : float, default=1.0, 0.2
+        Set max values for space and time grids.
+    init : scalar or function
+        Set initial condition. If a function, should take position
+        as an input and return temperature using same units as
+        x, temp.
+
 
     Returns
     -------
@@ -39,8 +52,7 @@ def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2):
         Array of time points/y-grid
     temp : numpy 2D array
         Temperature as a function of time and space.
-    xmax, tmax : float, default=1.0, 0.2
-        Set max values for space and time grids.
+
     '''
 
     # Set constants:
@@ -58,7 +70,12 @@ def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2):
     # Set initial and boundary conditions.
     temp[0, :] = 0
     temp[-1, :] = 0
-    temp[:, 0] = 4*x - 4*x**2
+
+    # Set initial condition.
+    if callable(init):
+        temp[:, 0] = init(x)
+    else:
+        temp[:, 0] = init
 
     # Solve!
     for j in range(0, N-1):
