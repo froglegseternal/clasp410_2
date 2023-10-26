@@ -55,6 +55,11 @@ def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2,
 
     '''
 
+    # Check stability criterion:
+    if (dt > dx**2/(2*c2)):
+        raise ValueError('Stability criterion not met: ' +
+                         f'dt={dt:6.2f}; dx={dx:06.2f}; c2={c2}')
+
     # Set constants:
     r = c2 * dt/dx**2
 
@@ -83,3 +88,4 @@ def heat_solve(dt=0.02, dx=0.2, c2=1.0, xmax=1.0, tmax=0.2,
             r*(temp[2:, j]+temp[:-2, j])
 
     return x, t, temp
+
